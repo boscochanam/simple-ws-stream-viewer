@@ -26,11 +26,11 @@ export default function StreamDetails({ currentStream, streamInput, setStreamInp
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                        <DropdownMenuItem onClick={() => onDropdownSelect('http://example.com/stream1')}>
-                            Stream Link 1
+                        <DropdownMenuItem onClick={() => onDropdownSelect('http://10.7.30.105:8000/cv2_stream')}>
+                            CV2 Stream
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onDropdownSelect('http://example.com/stream2')}>
-                            Stream Link 2
+                        <DropdownMenuItem onClick={() => onDropdownSelect('http://10.7.30.105:8000/rtsp_stream')}>
+                            RTSP Stream
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
