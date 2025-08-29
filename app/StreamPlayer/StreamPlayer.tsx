@@ -13,11 +13,17 @@ import StreamDetails from './components/StreamDetails';
 const STREAM_URL = process.env.NEXT_PUBLIC_STREAM_URL || 'http://localhost:8000/video_stream';
 
 export default function StreamPlayer() {
-
     const [currentStream, setCurrentStream] = useState(STREAM_URL);
+    const [streamInput, setStreamInput] = useState(STREAM_URL);
+    const [reloadKey, setReloadKey] = useState(0);
 
-    function updateStream(url: string) {
-        setCurrentStream(url);
+    function handleDropdownSelect(url: string) {
+        setStreamInput(url);
+    }
+
+    function handleReload() {
+        setCurrentStream(streamInput);
+        setReloadKey(prev => prev + 1); // force StreamWindow reload
     }
 
     return (
@@ -26,8 +32,14 @@ export default function StreamPlayer() {
             <Card className="m-6 p-0 flex items-center w-fit h-fit">
                 <CardTitle className="px-6 pt-6">Live Stream</CardTitle>
                 <CardContent className="p-6 pt-0">
-                    <StreamWindow STREAM_URL={currentStream} />
-                    <StreamDetails currentStream={currentStream} updateStream={updateStream} />
+                    <StreamWindow key={reloadKey} STREAM_URL={currentStream} />
+                    <StreamDetails
+                        currentStream={currentStream}
+                        streamInput={streamInput}
+                        setStreamInput={setStreamInput}
+                        onDropdownSelect={handleDropdownSelect}
+                        onReload={handleReload}
+                    />
                 </CardContent>
             </Card>
         </div>
