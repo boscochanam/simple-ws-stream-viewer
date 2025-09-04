@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import StreamWindow from './components/StreamWindow';
 import StreamDetails from './components/StreamDetails';
+import { Slider } from '@/components/ui/slider';
 
 const STREAM_URL = process.env.NEXT_PUBLIC_STREAM_URL || 'http://localhost:8000/video_stream';
 
@@ -42,6 +43,7 @@ export default function StreamPlayer() {
                     />
                 </CardContent>
             </Card>
+            
         </div>
     );
 }

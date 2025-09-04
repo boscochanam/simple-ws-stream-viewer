@@ -1,31 +1,46 @@
 
-from fastapi import FastAPI, Response
-from fastapi.responses import StreamingResponse
-import cv2
-import time
-from rtsp_handler import rtsp_streamer
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from api_router import router, start_frame_reader
 
-app = FastAPI()
+app = FastAPI(
+    title="Stream API",
+    description="API for streaming video content with interactive overlays",
+    version="1.0.0"
+)
 
-def cv2_streamer(video_path):
-    cap = cv2.VideoCapture(video_path)
-    try:
-        while True:
-            ret, frame = cap.read()
-            if not ret:
-                cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-                continue
-            _, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 70])  # Lower quality
-            frame_bytes = buffer.tobytes()
-            yield (b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
-            time.sleep(0.033)
-    finally:
-        cap.release()
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-@app.get("/cv2_stream")
-def cv2_stream(path: str = "video.mp4"):
-    return StreamingResponse(cv2_streamer(path), media_type="multipart/x-mixed-replace; boundary=frame")
+# Start the frame reader thread for CV2 streaming
+start_frame_reader("video.mp4")
 
-@app.get("/rtsp_stream")
-def rtsp_stream(rtsp_url: str = "rtsp://10.7.30.50:554/profile2/media.smp"):
-    return StreamingResponse(rtsp_streamer(rtsp_url), media_type="multipart/x-mixed-replace; boundary=frame")
+# Mount the API router
+app.include_router(router, prefix="/api/v1", tags=["streams"])
+
+# Also mount the router at the root for backward compatibility
+app.include_router(router, tags=["streams"])
+
+@app.get("/")
+def read_root():
+    return {
+        "message": "Stream API Server", 
+        "version": "1.0.0",
+        "endpoints": {
+            "cv2_stream": "/api/v1/cv2_stream (POST) or /cv2_stream (GET)",
+            "interactive_cv2_stream": "/api/v1/interactive_cv2_stream (POST) or /interactive_cv2_stream (GET)",
+            "rtsp_stream": "/api/v1/rtsp_stream (POST) or /rtsp_stream (GET)",
+            "update_id": "/api/v1/update_id (POST)",
+            "get_id": "/api/v1/get_id (GET)"
+        }
+    }
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}

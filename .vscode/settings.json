@@ -1,0 +1,12 @@
+{
+    "folder-color.pathColors": [
+        {
+            "folderPath": "simple-ws-stream-viewer/ws-streamer/",
+            "color": "foldercolorizer.color_00cc66"
+        },
+        {
+            "folderPath": "simple-ws-stream-viewer/app/",
+            "color": "foldercolorizer.color_00ccff"
+        }
+    ]
+}
